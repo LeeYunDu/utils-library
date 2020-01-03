@@ -89,8 +89,8 @@ export default class componentText extends Vue{
   changeArr(){
     this.arr[2] = 99
     console.log(this.arr)
-    // this.$set(this.arr,2,99)
-    // this.arr = [1,3,5]
+    this.$set(this.arr,2,99)
+    this.arr = [1,3,5]
   }
   beforeRouteLeave(to,from,next){
     console.log(to,from);
