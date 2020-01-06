@@ -29,7 +29,6 @@
 </style>
 <template>
   <div>
-    <!-- <h5>递归组件</h5> -->
     <ul>
         <li v-for="(item1,index1) in treeList" :key="index1"  :class="['tree-group']">
             <div class="tree-group-name">
@@ -52,7 +51,7 @@ import { Vue, Component, Prop } from "vue-property-decorator";
 @Component({
     name:'tree'
 })
-export default class newPage extends Vue{
+export default class Tree extends Vue{
   @Prop(Array)
   treeList:Array<any>
   @Prop({type:Boolean,default:true})

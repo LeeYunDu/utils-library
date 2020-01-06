@@ -8,6 +8,15 @@
     <borderStyle></borderStyle>
     <FoldBox></FoldBox>
     <mixBlendMode></mixBlendMode>
+    <h5>object-fit</h5>
+    <div class="object-fit-group">
+      <img src="/static/images/test.jpg" alt="">
+      <img style="object-fit:cover;"  src="/static/images/test.jpg" alt="cover">
+      <img style="object-fit:fill;"  src="/static/images/test.jpg" alt="fill">
+      <img style="object-fit:contain;"  src="/static/images/test.jpg" alt="contain">
+      <img style="object-fit:none;"  src="/static/images/test.jpg" alt="none">
+      <img style="object-fit:scale-down;"  src="/static/images/test.jpg" alt="scale-down">
+    </div>
   </div>
 
 </template>
@@ -34,6 +43,12 @@ export default class cssText extends Vue{
 </script>
 
 <style scoped>
+
+.object-fit-group >  img {
+  width: 200px;
+  height: 200px;
+}
+
 html *{
   outline:1px solid red
 }

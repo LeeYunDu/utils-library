@@ -71,10 +71,10 @@ import { Vue, Component, Prop , Watch } from "vue-property-decorator";
 @Component({})
 export default class Paging extends Vue {
   //总数
-  @Prop(Number)
+  @Prop({default:160})
   total: number;
   //每页显示几个
-  @Prop(Number)
+  @Prop({default:10})
   row: number;
   //当前页
   currentPage: number = 1;

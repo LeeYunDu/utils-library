@@ -1,5 +1,5 @@
 import axios from 'axios';
-let serverApi ='http://192.168.0.28:9051';
+let serverApi ='http://192.168.0.28:5000';
 
 
 // 是否开启 session

@@ -6,23 +6,21 @@
   flex:  0 0 170px;
   border: 1px solid;
 }
+ul li{
+  font-size: 14px;
+  color: #999;
+}
 </style>
 <template>
   <div class="componentTest">
-    <Paging :total="167" :row="10"></Paging>
-    <render :Level=3>Hello world!</render>
-    <tree :treeList='testArr' :toggle='true'></tree>
-    <div class="div1">
-      <div class="div2" v-for="(item,index) in arr" :key="index">{{item}}</div>
-    </div>
-    <button @click="changeArr">change</button>
-    <lee-form>
-      <lee-form-item label="姓名姓名姓名" icon="icon-add" width="80">
-        <input type="text" placeholder="请输入您的姓名">
-      </lee-form-item>
-    </lee-form>
-    <bigFileUpload></bigFileUpload>
-    
+    <ul>
+      <li @click="router('Paging')">分页按钮</li>
+      <li @click="router('bigFileUpload')">大文件断点续传/分片上传</li>
+      <li @click="router('tree')">多级标签栏折叠</li>
+      <li @click="router('alert')">挂载 alert/loading 弹窗</li>
+      <li @click="router('validatorForm')">表单验证</li>
+    </ul>
+    <router-view></router-view>
   </div>
 </template>
 
@@ -31,61 +29,25 @@ import { Vue, Component,Watch, Prop } from "vue-property-decorator";
 import Nav from '@/components/nav.vue'
 import Paging from "@/components/Paging.vue";
 import render from '@/components/render.vue'
-import tree from '@/components/tree.vue'
+
 import validatorForm from '@/components/validatorForm/form.vue'
 import bigFileUpload from '@/components/bigFileUpload/bigFileUpload.vue'
 @Component({
     components:{
         Paging,
         render,
-        tree,
         Nav,
         validatorForm,
         bigFileUpload
     }
 })
-export default class componentText extends Vue{
-
+export default class ComponentText extends Vue{
+  
   arr = [1,2,3,4,5,6,7]
-  testArr = [
-    {
-      name:'title1',
-      showChildren:true,
-      children:[
-        {
-          name:'title1-1',
-          showChildren:true,
-          children:[{name:'title-1-1'}]
-        },
-        {
-          name:'title1-2',
-          showChildren:true,
-          children:[{name:'title-1-1'}]
-        }
-      ]
-    },
-    {
-      name:'title2',
-      showChildren:true,
-      children:[
-        {
-          name:'title1-1',
-          showChildren:true,
-          children:[{name:'title-1-1'}]
-        },
-        {
-          name:'title1-2',
-          showChildren:true,
-          children:[{name:'title-1-1'}]
-        }
-      ]
-    },
-    {
-      name:'title3',
-      showChildren:true,
-    }
-  ]
-
+  
+  router(name){
+    this.$router.push({name:name})
+  }
   changeArr(){
     this.arr[2] = 99
     console.log(this.arr)
@@ -102,26 +64,7 @@ export default class componentText extends Vue{
     console.log(newValue,oldValue)
   }
   mounted () {
-    // this.$Toast.info({
-    //   message:'提交成功',//
-    //   duration:1500,
-    //   icon:'success',
-    //   mask:true,
-    //   success:()=>{
-    //     console.log('调用成功')
-    //   }
-    // })
-    // this.$Toast.loading({
-    //     message:'加载中',
-    //     duration:30000,
-    //     mask:true,
-    //     success:()=>{
-    //       console.log('调用成功')
-    //     }
-    // })
-    // setTimeout(() => {
-    //   this.$Toast.close();
-    // }, 100000);
+    
   }
   
 }
