@@ -1,5 +1,5 @@
 import axios from 'axios';
-let serverApi ='http://192.168.0.28:5000';
+let serverApi ='http://192.168.0.28:9051';
 
 
 // 是否开启 session
@@ -42,11 +42,12 @@ export const postRequest = (url: string ,params: any) => {
         },
     });
 };
-export const getRequest = (url: string ,params: any) => {
+export const getRequest = (url: string ,param: any) => {
     return axios({
         method: 'get',
         url: `${serverApi}${url}`,
-        data:params,
+        params:param,
+        // data:params,
         headers: {
             'Content-Type':'application/x-www-form-urlencoded',
         },

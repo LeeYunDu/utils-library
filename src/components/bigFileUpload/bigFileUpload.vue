@@ -14,6 +14,12 @@ p {
     </p>
     <h5>思路</h5>
     <p v-for="(item,index) in note" :key="index">{{index+1}}、{{item}}</p>
+    <h5>问题</h5>
+    <p>拷贝文件时，文件丢失，文件破损打开不了</p>
+    <p>文件块切块的大小影响文件拷贝，最后一个文件块 小于之前的文件块，请求完毕，合并文件破损。<br>
+      <span style="color:red">前端采用 promise.all 来 请求 合并文件 （settimeout来做时间延迟） , node 采用</span>
+    </p>
+    
     <input
       type="file"
       name="file"
@@ -49,21 +55,27 @@ export default class BigFileUpload extends Vue {
   skip:boolean = false;
   file = null
   fileSize:number = null
-  chunkSize = 1024 * 1024 * 2 //文件切片为2M
+  chunkSize = 1024 * 1024 * 2  //文件切片为5M
   chunks:number = 0 //切片数量
   currentChunk:number = 0 // 已上传的文件数
   hasUploaded:number = 0 // MD5效验文件 检测到的 已上传的文件块数量
-
+  test = []
   mounted() {
   }
 
   async fileChange() {
     let form = new FormData();
     let file = (this.$refs.file as any).files[0];
+    console.log(file)
     this.file = file;
     this.fileSize = file.size;
     form.append("file", file, file.name);
-    console.log(file.size);
+    // this.$fileRequest('/api/user/uploadFile',form).then((result) => {
+    //   console.log(result)
+    // }).catch((err) => {
+      
+    // });
+    // return
     if (this.running) {
       return;
     } 
@@ -71,12 +83,13 @@ export default class BigFileUpload extends Vue {
     let md5Filevalue = await this.MD5File(file);
     this.md5FileValue = (md5Filevalue as string);
     let checkFileResult = await this.checkFile(file.name,this.md5FileValue);
+    console.log(checkFileResult)
     if(checkFileResult.data.file){
       // 检查出服务器中已存在该文件
       alert('文件已上传')
       return
     }
-    this.checkAndUploadChunk(this.md5FileValue,checkFileResult.data.chunkList)
+    this.checkAndUploadChunk(this.md5FileValue,checkFileResult.data.data.info.chunkList)
     // this.fnTow(file);
     // console.log(fileReader.readAsArrayBuffer(file))
     // this.$postRequest('/api/user/uploadFile',form).then((result) => {
@@ -133,7 +146,7 @@ export default class BigFileUpload extends Vue {
         fileName: fileName,
         fileMd5Value:fileMD5Value
       }
-      this.$getRequest(`/check/file?fileName=${fileName}&fileMd5Value=${fileMD5Value}`).then((result) => {
+      this.$getRequest(`/api/upload/checkFile`,params).then((result) => {
         resolve(result)
       }).catch((err) => {
         reject('效验文件出错')
@@ -141,29 +154,41 @@ export default class BigFileUpload extends Vue {
     })
   }
   // 检查并上传MD5
-  checkAndUploadChunk(fileMD5Value,chunkList){
+ async checkAndUploadChunk(fileMD5Value,chunkList){
     // fileMD5Value 唯一标识  chunkList = 已上传的文件块/空数组 文件
     this.hasUploaded = chunkList.length;
+    let uploadList = []
+    
     for(let i = 0;i<this.chunks;i++){
       // chunkList 返回已上传文件块的名称 以 0 开始
       let hasChunkUpload = chunkList.indexOf(i + '') > -1
       // 不存在该文件块后则上传
-      console.log(hasChunkUpload)
       if(!hasChunkUpload){
-         this.uploadFile(i,fileMD5Value).then((result:any) => {
-           console.log(result)
-         }).catch((err) => {
+        uploadList.push(i);
+        //  this.uploadFile(i,fileMD5Value).then((result:any) => {
+        //    console.log(result)
+        //  }).catch((err) => {
            
-         });
+        //  });
       }
     }
-
+    uploadList.map( async (e)=>{
+      this.uploadFile(e,fileMD5Value)
+    })
+    await Promise.all(uploadList).then((result) => {
+      console.log(this.chunks === result.length + this.hasUploaded)
+      setTimeout(d=>{
+        this.notifyServer(this.md5FileValue)
+      },1000)
+    }).catch((err) => {
+      
+    });;
   }
   uploadFile(i,md5FileValue){
     // i 当前的文件块, MD5标识， 需上传文件块总数
     let that = this;
     return new Promise((resolve,reject)=>{
-      // 文件分区
+            // 文件分区
       let end = (i+1) * this.chunkSize >= this.fileSize?this.fileSize:(i+1)*this.chunkSize
       let data  =this.file.slice(i*this.chunkSize,end);
       let form = new FormData();
@@ -171,11 +196,12 @@ export default class BigFileUpload extends Vue {
       form.append('total',this.chunks.toString())// 文件分块总数
       form.append('index',i);// 当前上传的文件块
       form.append('fileMd5Value',md5FileValue)// MD5文件标识
-      that.$fileRequest('/upload',form).then((result) => {
+
+      that.$fileRequest('/api/upload/uploadFile',form).then((result) => {
+        this.test.push(i)
         if(result.status===200){
-          this.hasUploaded++;
-          console.log(result.data.desc + 1)
-          if(this.chunks==parseInt(result.data.desc) + 1){
+          if(this.chunks==parseInt(result.data.data.res.desc) + 1){
+            return
             this.notifyServer(this.md5FileValue)
           }
         }
@@ -186,7 +212,12 @@ export default class BigFileUpload extends Vue {
     })
   }
   notifyServer(md5FileValue){
-    this.$getRequest(`/merge?md5=${md5FileValue}&fileName=${this.file.name}&size=${this.file.size}`).then((result) => {
+    let params = {
+      fileMD5Value:md5FileValue,
+      fileName:this.file.name,
+      size:this.file.size
+    }
+    this.$getRequest(`/api/upload/mergeFile`,params).then((result) => {
       console.log(result)
     }).catch((err) => {
       

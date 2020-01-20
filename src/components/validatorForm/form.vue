@@ -15,7 +15,7 @@ import {Validator} from './validator';
 export default class Form extends Vue {
     @Provide('leeForm') leeForm = this;
     private form = {
-        Name:{value:'',rule:'',err:'名称不能为空'},
+        Name:{value:'',rule:'isNonEmpty',err:'名称不能为空'},
         Address:{value:'',rule:'minLength:6',err:'最小长度不少于6个字符'},
         Phone:{value:'',rule:'isMobile',err:'手机格式错误'},
     };

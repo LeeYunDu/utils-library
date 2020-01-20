@@ -53,6 +53,7 @@ export class Validator {
     for (let i = 0, validatorFunc; (validatorFunc = this.cache[i++]); ) {
       let msg = validatorFunc();
       if (msg) {
+        this.cache = []
         return msg;
       }
     }
