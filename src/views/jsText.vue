@@ -6,10 +6,15 @@ body {
 </style>
 <template>
   <div>
+    <ul>
+      <li @click="router('js01')">js01</li>
+    </ul>
+    <router-view></router-view>
     <h5>localStorage</h5>
     <input type="text" v-model="localStorageName" />
     <h5>防抖</h5>
     <input type="text" @input="search" />
+    <button @click="bibao">闭包</button>
     <div style="height:2000px;">高度2000</div>
   </div>
 </template>
@@ -34,7 +39,7 @@ export default class jsText extends Vue {
   jieliu: any = {};
   //localStorage
   localStorageName = "";
-
+  number = 999;
   @Watch("person", { immediate: true, deep: true })
   onPersonChanged(value, oldVal) {
     console.log(value, oldVal);
@@ -44,66 +49,67 @@ export default class jsText extends Vue {
     console.log(this.$store.getters.info.data, 333);
     let time1 = "1996-10-09";
     let time2 = "2001-08-08";
-    console.log(time1 > time2, "时间字符串比较", time1, time2);
-    console.log(this.star(4), "评论星级");
+    // console.log(time1 > time2, "时间字符串比较", time1, time2);        false "时间字符串比较" 
     let date = new Date("2019-09-07");
-    console.log(+date, "时间戳 +号 ");
+    // console.log(+date, "时间戳 +号 ");       1567814400000 "时间戳 +号 "
     //判断执行
-    1 > 2 ? this.star(2) : "";
     let arr = [0, 1, 2];
     1 < 2 && this.text();
     this.text2() && this.text();
     //对象合并
-    let obj1 = {
-      a: 1,
-      b: 2,
-      c: 3
-    };
-    let obj2 = {
-      a: 2,
-      b: 4
-    };
+    let obj1 = {a: 1, b: 2,c: 3};
+    let obj2 = {a: 2,b: 4};
     let obj3 = { ...obj1, ...obj2 };
-    console.log(obj3);
+    // console.log(obj3); {a: 2, b: 4, c: 3}
     //Array.from
-    let obj = {
-      name: "",
-      age: 0
-    };
+    let obj = {name: "",age: 0};
     let peoples = Array.from({ length: 3 }, (value, index) => index);
-    console.log(peoples);
-    //监听页面滚动
-    this.jieliu = this.throttle(this.getScrollTop, 1000);
-    window.addEventListener("scroll", () => {
-      //节流
-      // this.jieliu();
-
-      //防抖
-     this.handleScorll();
-    });
+    // console.log(peoples); [0, 1, 2]
+ 
     // 监听
-    this.watch1();
+    // this.watch1();
     // localStorage
     this.useLocalStorage();
     // promise 测试
     // this.promiseTest1();
     // this.promiseTest2();
     let arr3 = [1, 1, 3, 3, 4, 56, 123, 12];
-    console.log(Array.from(new Set(arr3)));
+    // console.log(Array.from(new Set(arr3))); [1, 3, 4, 56, 123, 12]
     var arr4 = [10, 20, 1, 2];
-    console.log(
-      arr4.sort((x, y) => {
-        return x - y;
-      })
-    );
+    // console.log(
+    // sort 对数组进行排序
+    //   arr4.sort((x, y) => {
+    //     return x - y;
+    //   })
+    // );  [1, 2, 10, 20]
     console.log(this.add(5));
     console.log(this.$root);
+    // 枚举
     const enum learn {
       math,
       language
     }
     const name = [learn.language, learn.math];
-    console.log(name);
+    //闭包
+    let bibao = this.bibao();
+    bibao();
+    bibao();
+    //递归
+    console.log('递归*********************************')
+    function digui(number){
+      if(number==1){
+        return 1
+      }else{
+        return digui(number-1) + number
+      }
+    }
+    console.log(digui(999))
+    console.log('递归*********************************')
+    let arr5 = [1,2,3,4,5,6]
+    console.log(typeof arr5,arr5 instanceof Array,Object.prototype.toString.call(arr5))
+  }
+  router(name){
+    this.$router.push({name:name})
   }
   add(number) {
     let count = 0;
@@ -116,14 +122,9 @@ export default class jsText extends Vue {
     };
     return sum;
   }
-  //评论星级
-  star(count) {
-    let stars = "★★★★★☆☆☆☆☆";
-    let result = stars.slice(5 - count, 10 - count);
-    return result;
-  }
+
   text() {
-    console.log("执行判断text");
+    
   }
   text2() {
     return true;
@@ -148,7 +149,6 @@ export default class jsText extends Vue {
   }
   promiseTest3() {
     let fn1 = new Promise((resolve, reject) => {
-      console.log(1);
       resolve("promiseTest3");
     });
     return fn1;
@@ -188,58 +188,7 @@ export default class jsText extends Vue {
       return "async";
     }, 2000);
   }
-  handleScorll() {
-    if (this.getScrollTop() + this.getWindowHeight() > this.getScrollHeight()) {
-      // if (this.total > this.page) {
-        // this.page++;
-        // this.getAuctionList();
-      // } else {
-        // vant.Toast('已加载完毕');
-      // }
-    }
-  }
-  // 获取文档的总高度
-  getScrollHeight() {
-    let scrollHeight = 0,
-      bodyScrollHeight = 0,
-      documentScrollHeight = 0;
-    if (document.body) {
-      bodyScrollHeight = document.body.scrollHeight;
-    }
-    if (document.documentElement) {
-      documentScrollHeight = document.documentElement.scrollHeight;
-    }
-    scrollHeight =
-      bodyScrollHeight - documentScrollHeight > 0
-        ? bodyScrollHeight
-        : documentScrollHeight;
-    return scrollHeight;
-  }
-  //获取滚动条在Y轴上的距离
-  getScrollTop() {
-    let scrollTop = 0,
-      bodyScrollTop = 0,
-      documentScrollTop = 0;
-    if (document.body) {
-      bodyScrollTop = document.body.scrollTop;
-    }
-    if (document.documentElement) {
-      documentScrollTop = document.documentElement.scrollTop;
-    }
-    scrollTop =
-      bodyScrollTop - documentScrollTop > 0 ? bodyScrollTop : documentScrollTop;
-    return scrollTop;
-  }
-  //浏览器视口的高度
-  getWindowHeight() {
-    let windowHeight = 0;
-    if (document.compatMode == "CSS1Compat") {
-      windowHeight = document.documentElement.clientHeight;
-    } else {
-      windowHeight = document.body.clientHeight;
-    }
-    return windowHeight;
-  }
+
 
   //Vue 专栏 ————————————————————————
 
@@ -278,15 +227,6 @@ export default class jsText extends Vue {
     localStorage.setItem("name", JSON.stringify(this.localStorageName));
     sessionStorage.setItem("name", JSON.stringify(this.localStorageName));
   }
-  //防抖
-  debounce(fn, delay) {
-    return (args?) => {
-      if (fn.id) clearTimeout(fn.id);
-      fn.id = setTimeout(() => {
-        fn.apply(this, args);
-      }, delay);
-    };
-  }
   //节流
   throttle(fn, delay) {
     var previous = 0;
@@ -302,12 +242,20 @@ export default class jsText extends Vue {
   }
   search() {
     //触发搜索
-    this.debounce(this.searchResult, 2000)();
+    
   }
   searchResult() {
     //搜索结果
     console.log("搜索结果");
   }
+  bibao(){
+    let number =0;
+    return ()=>{
+      number++;
+      console.log(number)
+    }
+  }
+
 }
 </script>
 

@@ -62,10 +62,17 @@ export default new Router({
           ]
         },
         {
-          path: "js",
+          path: "/js",
           name: "js",
           component: () => import("@/views/jsText.vue"),
-          meta: { title: "js" }
+          meta: { title: "js" },
+          children:[
+            {
+              path:'js01',
+              name:'js01',
+              component:()=>import("@/views/JS/js01.vue")
+            }
+          ]
         }
       ]
     },
