@@ -58,6 +58,12 @@ export default new Router({
               name:'validatorForm',
               meta:{title:'validatorForm'},
               component:()=>import('@/components/validatorForm/index.vue')
+            },
+            {
+              path:'swiperImg',
+              name:'swiperImg',
+              meta:{title:'swiperImg'},
+              component:()=>import('@/components/swiperImg/swiperImg.vue')
             }
           ]
         },

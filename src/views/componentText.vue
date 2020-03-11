@@ -19,6 +19,7 @@ ul li{
       <li @click="router('tree')">多级标签栏折叠</li>
       <li @click="router('alert')">挂载 alert/loading 弹窗</li>
       <li @click="router('validatorForm')">表单验证</li>
+      <li @click="router('swiperImg')">轮播图 -缩略图  </li>
     </ul>
     <router-view></router-view>
   </div>
